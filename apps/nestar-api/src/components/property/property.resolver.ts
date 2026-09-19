@@ -20,7 +20,7 @@ export class PropertyResolver {
 	constructor(private readonly propertyService: PropertyService) {}
 
 	@Roles(MemberType.AGENT)
-	@UseGuards(RolesGuard)
+	@UseGuards(AuthGuard, RolesGuard)
 	@Mutation(() => Property)
 	public async createProperty(
 		@Args('input') input: PropertyInput,

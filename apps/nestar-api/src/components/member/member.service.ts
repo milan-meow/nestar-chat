@@ -91,6 +91,8 @@ export class MemberService {
 				$in: [MemberStatus.ACTIVE, MemberStatus.BLOCK], // $in = include only contain these status
 			},
 		};
+		console.log('queryService: getMember');
+		console.log('targetId:', targetId);
 		const targetMember = await this.memberModel.findOne(search).lean().exec(); // .lean() it makes data to object type
 		if (!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
@@ -117,8 +119,8 @@ export class MemberService {
 	}
 
 	private async checkSubscription(followerId: Types.ObjectId, followingId: Types.ObjectId): Promise<MeFollowed[]> {
-		const result = await this.followModel.findOne({followingId: followingId, followerId: followerId}).exec();
-		return result ? [{followerId: followerId, followingId: followingId, myFollowing: true}] : [];
+		const result = await this.followModel.findOne({ followingId: followingId, followerId: followerId }).exec();
+		return result ? [{ followerId: followerId, followingId: followingId, myFollowing: true }] : [];
 	}
 
 	public async getAgents(memberId: Types.ObjectId, input: AgentsInquiry): Promise<Members> {
@@ -137,7 +139,7 @@ export class MemberService {
 					$facet: {
 						// bir nechta querylarni olib aloxida aloxida nomlar bilan olishni tashkillashtirib beradi
 						list: [
-							{ $skip: (input.page - 1) * input.limit }, 
+							{ $skip: (input.page - 1) * input.limit },
 							{ $limit: input.limit },
 							lookupAuthMemberLiked(memberId),
 							// memberlarimiz qaysi agentlarga like bosganini korish
@@ -153,36 +155,35 @@ export class MemberService {
 		return result[0];
 	}
 
-
 	/** LIKE **/
 
 	public async likeTargetMember(memberId: Types.ObjectId, likeRefId: Types.ObjectId): Promise<Member> {
-		const target = await this.memberModel.findOne({ 
-			_id: likeRefId, 
-			memberStatus: MemberStatus.ACTIVE 
-		})
-		.exec();
+		const target = await this.memberModel
+			.findOne({
+				_id: likeRefId,
+				memberStatus: MemberStatus.ACTIVE,
+			})
+			.exec();
 		if (!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
-		const input: LikeInput = {   
+		const input: LikeInput = {
 			memberId: memberId,
 			likeRefId: likeRefId,
 			likeGroup: LikeGroup.MEMBER,
 		};
 
 		// LIKE TOGGLE -1, +1  -> like bosganda 1taga kopayadi yana qayta bossa -1 ga kamayadi
-		// LIKE via service module 
-		const modifier: number = await this.likeService.toggleLike(input) ?? 1;
+		// LIKE via service module
+		const modifier: number = (await this.likeService.toggleLike(input)) ?? 1;
 		const result = await this.memberStatsEditor({
 			_id: likeRefId,
 			targetKey: 'memberLikes',
 			modifier: modifier,
-		})
+		});
 
 		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
 		return result;
 	}
-
 
 	public async getAllMembersByAdmin(input: MembersInquiry): Promise<Members> {
 		// console.log('Mutation: getAllMembersByAdmin');
@@ -222,11 +223,11 @@ export class MemberService {
 	}
 
 	public async memberStatsEditor(input: StatisticModifier): Promise<Member> {
-		console.log("executed!!!");
-		
+		console.log('executed!!!');
+
 		const { _id, targetKey, modifier } = input;
 		const result = await this.memberModel
-			.findOneAndUpdate(_id, { $inc: { [targetKey]: modifier } }, { new: true })
+			.findOneAndUpdate({ _id }, { $inc: { [targetKey]: modifier } }, { new: true })
 			.exec();
 
 		if (!result) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
