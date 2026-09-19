@@ -22,7 +22,7 @@ export class BatchController {
 // │    └──────────────────── Minut (0–59)
 // └───────────────────────── Sekund (0–59)
 
-  @Cron("00 00 01 * * *", {name: BATCH_ROLLBACK})  // kechasi soat 01 minut 00 secund 00
+  @Cron("00 * * * * *", {name: BATCH_ROLLBACK})  // kechasi soat 01 minut 00 secund 00
   public async batchRollback() {
     try {
       this.logger["context"] = BATCH_ROLLBACK;
@@ -33,7 +33,7 @@ export class BatchController {
     }
   }
 
-  @Cron("20 00 01 * * *", {name: BATCH_TOP_PROPERTIES}) // kechasi soat 01 minut 00 secund 20
+  @Cron("20 * * * * *", {name: BATCH_TOP_PROPERTIES}) // kechasi soat 01 minut 00 secund 20
   public async batchTopProperties() {
     try {
       this.logger["context"] = BATCH_TOP_PROPERTIES;
@@ -44,7 +44,7 @@ export class BatchController {
     }
   }
 
-  @Cron("40 00 01 * * *", {name: BATCH_TOP_AGENTS})  // kechasi soat 01 minut 00 secund 40 
+  @Cron("40 * * * * *", {name: BATCH_TOP_AGENTS})  // kechasi soat 01 minut 00 secund 40 
   public async batchTopAgents() {
     try {
       this.logger["context"] = BATCH_TOP_AGENTS;
