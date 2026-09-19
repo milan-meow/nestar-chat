@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { log } from 'node:console';
 import { Property } from '../../nestar-api/src/libs/dto/property/property';
 import { Member } from '../../nestar-api/src/libs/dto/member/member';
 import { PropertyStatus } from '../../nestar-api/src/libs/enums/property.enum';
@@ -37,7 +36,6 @@ export class BatchService {
     const properties: Property[] = await this.propertyModel.find(
       {
         propertyStatus: PropertyStatus.ACTIVE,
-        propertyRank: 0,
       })
       .exec();
 
