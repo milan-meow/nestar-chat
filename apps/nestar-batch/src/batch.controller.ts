@@ -13,9 +13,15 @@ export class BatchController {
   handleTimeOut() {
     this.logger.debug("BATCH SERVER READY!")
   }
+//   *    *    *    *    *    *
+// │    │    │    │    │    │
+// │    │    │    │    │    └── Hafta kuni (0–7)
+// │    │    │    │    └────── Oy (1–12)
+// │    │    │    └────────── Kun (1–31)
+// │    │    └─────────────── Soat (0–23)
+// │    └──────────────────── Minut (0–59)
+// └───────────────────────── Sekund (0–59)
 
-  // @Cron ("   *       *        *       *        *        * ")
-  // @Cron ("secund | minut |  soat    ")
   @Cron("00 00 01 * * *", {name: BATCH_ROLLBACK})  // kechasi soat 01 minut 00 secund 00
   public async batchRollback() {
     try {

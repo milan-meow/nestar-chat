@@ -14,6 +14,8 @@ import { getSerialForImage, shapeIntoMongoObjectId, validMimeTypes } from '../..
 import { WithoutGuard } from '../auth/guards/without.guard';
 import { GraphQLUpload, FileUpload } from 'graphql-upload';
 import { createWriteStream } from 'fs';
+import { mkdir } from 'fs/promises';
+import * as path from 'path';
 import { Message } from '../../libs/enums/common.enum';
 
 @Resolver()
@@ -142,6 +144,7 @@ export class MemberResolver {
 
 		const imageName = getSerialForImage(filename);
 		const url = `uploads/${target}/${imageName}`;
+		await mkdir(path.dirname(url), { recursive: true });
 		const stream = createReadStream();
 
 		const result = await new Promise((resolve, reject) => {
@@ -174,6 +177,7 @@ export class MemberResolver {
 
 				const imageName = getSerialForImage(filename);
 				const url = `uploads/${target}/${imageName}`;
+				await mkdir(path.dirname(url), { recursive: true });
 				const stream = createReadStream();
 
 				const result = await new Promise((resolve, reject) => {

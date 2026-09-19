@@ -37,24 +37,26 @@ export const lookupAuthMemberLiked = (memberId: T, targetRefId: string = "$_id")
 	//  "$_id" = propertyModeldan memberimizni idsi ga teng agar u propertyModeldan kelmasa default oi qoyib ketadi
 	return {
 		$lookup: {
-			from: "likes",
-			let: {
-				localLikeRefId: targetRefId, 
-				localMemberId: memberId,
-				localMyFavorite: true,
+			from: "likes",  // likes collectiondan letdagi properties larni qidiryapmiz
+			let: { // local variablelar
+				localLikeRefId: targetRefId, // property Id si [member1, member2, member3]
+				localMemberId: memberId,  // memberID si.      [Khoji]
+				localMyFavorite: true, // ozimiz u/n qiymat yaratib true deb oldik
 			},
 			pipeline: [
 				{
-					$match: {
-						$expr: {
+					$match: { // solishtirish
+						$expr: { // bir nechta narsani solishtirish uchun expressiondan foydalanyapmiz
 							$and: [{$eq: ['$likeRefId', '$$localLikeRefId']}, { $eq: ['$memberId', '$$localMemberId'] }],
+							// @and => like bosgan user b/n   login bolgan userni solishtiradi
+							// $$ -> local variablelear doim $$ bilan yoziladi
 						}
 					}
 				},
 				{
-					$project: {
-						_id: 0,
-						memberId: 1,
+					$project: { // projectda tepadan olingan malumotlarni olib beradi
+						_id: 0, // default 1 ni oladi
+						memberId: 1, // olyapmiz
 						likeRefId: 1,
 						myFavorite: '$$localMyFavorite',
 					}
