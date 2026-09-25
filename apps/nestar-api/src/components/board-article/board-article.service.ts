@@ -177,7 +177,7 @@ export class BoardArticleService {
 		const modifier: number = (await this.likeService.toggleLike(input)) ?? 1;
 		const result = await this.boardArticleStatsEditor({
 			_id: likeRefId,
-			targetKey: 'propertyLikes',
+			targetKey: 'articleLikes',
 			modifier: modifier,
 		});
 

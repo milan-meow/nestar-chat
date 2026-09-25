@@ -98,7 +98,7 @@ export class MemberResolver {
 	@UseGuards(AuthGuard)
 	@Mutation(() => Member)
 	public async likeTargetMember(
-		@Args('input') input: string,
+		@Args('memberId') input: string,
 		@AuthMember('_id') memberId: mongoose.Types.ObjectId,
 	): Promise<Member> {
 		console.log("Mutation: likeTargetMember");
