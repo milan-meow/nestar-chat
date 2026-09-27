@@ -31,7 +31,7 @@ export class ViewService {
 	public async getVisitedProperties(memberId: Types.ObjectId, input: OrdinaryInquiry): Promise<Properties> {
 		
         const { page, limit } = input;
-        const match: T = {likeGroup: ViewGroup.PROPERTY, memberId: memberId};
+        const match: T = { viewGroup: ViewGroup.PROPERTY, memberId };
 
 		console.log('memberId:', memberId);
 		console.log('memberId instanceof ObjectId:', memberId instanceof Types.ObjectId);
