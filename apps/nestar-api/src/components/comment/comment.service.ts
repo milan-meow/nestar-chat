@@ -74,7 +74,7 @@ export class CommentService {
             {
                 new: true,
             },
-        );
+        ).exec();
         if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
         return result;
     }
@@ -102,7 +102,7 @@ export class CommentService {
                     ],
                 },
             },
-        ]);
+        ]).exec();
         if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
         return result[0];
@@ -110,7 +110,7 @@ export class CommentService {
 
 
     public async removeCommentByAdmin(input: mongoose.Types.ObjectId): Promise<Comment> {
-        const result = await this.commentModel.findByIdAndDelete(input);
+        const result = await this.commentModel.findByIdAndDelete(input).exec();
 
         if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
         return result;

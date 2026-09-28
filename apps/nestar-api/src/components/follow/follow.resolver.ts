@@ -32,7 +32,7 @@ export class FollowResolver {
     ): Promise<Follower> {
         console.log('Mutation: unsubscribe');
         const followingId = shapeIntoMongoObjectId(input)
-        return await this.followService.subscribe(memberId, followingId);
+        return await this.followService.unsubscribe(memberId, followingId);
     }
 
 

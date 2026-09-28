@@ -53,7 +53,7 @@ export class FollowService {
         const result = await this.followModel.findOneAndDelete({
             followingId: followingId,
             followerId: followerId,
-        });
+        }).exec();
 
         if (!result) {
             throw new InternalServerErrorException(Message.NO_DATA_FOUND);
@@ -103,7 +103,7 @@ export class FollowService {
 
     public async getMemberFollowers(memberId: Types.ObjectId, input: FollowInquiry): Promise<Followers> {
         const { page, limit, search } = input;
-        if (!search?.followerId) throw new InternalServerErrorException(Message.BAD_REQUEST);
+        if (!search?.followingId) throw new InternalServerErrorException(Message.BAD_REQUEST);
         const match: T = { followingId: search?.followingId };
         console.log("match: ", match);
         
