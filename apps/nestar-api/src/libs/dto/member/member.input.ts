@@ -117,6 +117,6 @@ export class MembersInquiry {
 	direction?: readline.Direction;
 
 	@IsNotEmpty()
-	@Field(() => AISearch)
+	@Field(() => MISearch)
 	search!: MISearch;
 }

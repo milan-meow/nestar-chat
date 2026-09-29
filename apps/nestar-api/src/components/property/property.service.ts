@@ -310,7 +310,7 @@ export class PropertyService {
 
 	public async removePropertyByAdmin(propertyId: Types.ObjectId): Promise<Property> {
 		const search: T = { _id: propertyId, propertyStatus: PropertyStatus.DELETE };
-		const result = await this.PropertyModel.findOneAndUpdate(search).exec();
+		const result = await this.PropertyModel.findOneAndDelete(search).exec();
 		if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
 
 		return result;
