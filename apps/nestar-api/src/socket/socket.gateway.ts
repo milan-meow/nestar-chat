@@ -43,7 +43,7 @@ export class SocketGateway implements OnGatewayInit {
 
 		const infoMsg: InfoPayload = {
 			event: 'info',
-			totalClients: this.summaryClient,
+			totalClients: this.summaryClient, 
 		};
 
 		// Client - disconnect
