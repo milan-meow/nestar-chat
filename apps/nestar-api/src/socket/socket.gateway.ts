@@ -4,11 +4,11 @@ import { Server } from 'ws';
 import * as Websocket from 'ws';
 import { AuthService } from '../components/auth/auth.service';
 import { Member } from '../libs/dto/member/member';
-import * as url from 'url';
 
 interface MessagePayload {
 	event: string;
 	text: string;
+	memberData: Member | null;
 }
 
 interface InfoPayload {
@@ -35,12 +35,23 @@ export class SocketGateway implements OnGatewayInit {
 	}
 
 	private async retrieveAuth(req: any): Promise<Member | null> {
+		const requestUrl = new URL(req.url ?? '/', `http://${req.headers.host ?? 'localhost'}`);
+		const queryToken = requestUrl.searchParams.get('token');
+		const authorization = req.headers.authorization;
+		const headerToken = typeof authorization === 'string' ? authorization.match(/^Bearer\s+(.+)$/i)?.[1] : undefined;
+		const token = queryToken ?? headerToken;
+
+		if (!token) {
+			this.logger.warn('WebSocket connection has no auth token; connected as Guest');
+			return null;
+		}
+
 		try {
-			const parseUrl = url.parse(req.url, true);
-			const { token } = parseUrl.query;
-			// console.log('token: ', token);
-			return await this.authService.verifyToken(token as string);
-		} catch (err) {
+			return await this.authService.verifyToken(token);
+		} catch (error) {
+			this.logger.warn(
+				`WebSocket token verification failed: ${error instanceof Error ? error.name : 'unknown error'}`,
+			);
 			return null;
 		}
 	}
@@ -87,13 +98,17 @@ export class SocketGateway implements OnGatewayInit {
 	@SubscribeMessage('message')
 	public async handleMessage(client: any, payload: any): Promise<void> {
 		const authMember = this.clientAuthMap.get(client);
-		const newMessage: MessagePayload = { event: 'message', text: payload };
+		const newMessage: MessagePayload = {
+			event: 'message', text: payload,
+			memberData: authMember ?? null,
+		};
 
 		const clientNick: string = authMember?.memberNick ?? 'Guest';
 		this.logger.verbose(`NEW MESSAGE [${clientNick}]: ${payload}`);
 
 		this.messageList.push(newMessage);
 		if(this.messageList.length >= 5) this.messageList.splice(0, this.messageList.length - 5); // Keep only the last 5 messages
+		this.emitMessage(newMessage);
 	}
 
 	private broadcastMessage(sender: Websocket.WebSocket, message: InfoPayload | MessagePayload) {
